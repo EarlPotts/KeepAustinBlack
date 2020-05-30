@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "475689461836",
+    "firebase_url": "https://the-guide-to-black-austin.firebaseio.com",
+    "project_id": "the-guide-to-black-austin",
+    "storage_bucket": "the-guide-to-black-austin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:475689461836:android:8cc111dca4542f7d602ce9",
+        "android_client_info": {
+          "package_name": "com.earlpotts.austinwhileblack"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "475689461836-irdm4paaugtcmj85agll2d5cktjms1vi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuXO_2svBUxABfQIpIajXh6DTcF1hhKSY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "475689461836-irdm4paaugtcmj85agll2d5cktjms1vi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:475689461836:android:09f44c950ee214e8602ce9",
+        "android_client_info": {
+          "package_name": "com.epotts.austinwhileblack"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "475689461836-irdm4paaugtcmj85agll2d5cktjms1vi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuXO_2svBUxABfQIpIajXh6DTcF1hhKSY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "475689461836-irdm4paaugtcmj85agll2d5cktjms1vi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
