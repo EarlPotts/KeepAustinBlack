@@ -1,16 +1,14 @@
-# austinwhileblack
 
-Mobile application aiming to combate Austin gentrification by increasing exposure to black businesses
 
-## Getting Started
+# Keep Austin Black Mobile App
 
-This project is a starting point for a Flutter application.
+Keep Austin Black is an Android & iOS based mobile application meant to serve as a directory for black owned business in Austin, TX and surrounding areas!
 
-A few resources to get you started if this is your first Flutter project:
+![KAB logo](https://github.com/EarlPotts/KeepAustinBlack/blob/master/icons/icon.png?raw=true)
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## Installation
+The app is available on the Google Play Store for Android devices and the Apple App Store for iOS devices.
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Support
+Please feel free to contact me at epotts0629@gmail.com for app support or feedback.
+If you would like a black-owned business that you own or know of, feel free to fill out this [Google form](https://forms.gle/GZtwajGAb9HdTmc47)
