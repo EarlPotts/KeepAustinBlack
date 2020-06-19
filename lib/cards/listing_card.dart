@@ -3,8 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:keepaustinblack/main_screens/login_page.dart';
 import 'package:like_button/like_button.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:keepaustinblack/containers/my_list_tile.dart';
 
@@ -178,7 +180,36 @@ class _ListingCardState extends State<ListingCard>
   Future<bool> onFavButtonTapped(bool isLiked) async {
     final firestore = Firestore.instance;
     final auth = FirebaseAuth.instance;
-    final String uid = (await auth.currentUser()).uid;
+    final FirebaseUser currUser = await auth.currentUser();
+
+    if (currUser == null) {
+      Alert(
+        title: 'Not Signed In',
+        context: context,
+        desc:
+            "You may browse the business listings as a guest, but in order to save your favorite business you must sign in.",
+        buttons: [
+          DialogButton(
+            child: Text(
+              "Sign In",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () =>
+                Navigator.pushReplacementNamed(context, LoginPage.id),
+            width: 60,
+          ),
+          DialogButton(
+            child: Text(
+              "Cancel",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () => Navigator.pop(context),
+            width: 60,
+          )
+        ],
+      ).show();
+    }
+    final String uid = currUser.uid;
     DocumentReference newFavorite = firestore
         .collection('users')
         .document(uid)

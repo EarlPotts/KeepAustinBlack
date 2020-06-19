@@ -113,7 +113,7 @@ class _SignInState extends State<SignInForm> {
             child: Form(
               key: formKey,
               child: Padding(
-                padding: EdgeInsets.only(left: 30, right: 30),
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
@@ -204,7 +204,7 @@ class _SignInState extends State<SignInForm> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 20.0),
+                      padding: EdgeInsets.only(top: 20.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
@@ -247,7 +247,20 @@ class _SignInState extends State<SignInForm> {
                           ),
                         ],
                       ),
-                    )
+                    ),
+                    FlatButton(
+                      child: Text(
+                        'Continue as guest',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                          fontSize: 15,
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, MainFeed.id);
+                      },
+                    ),
                   ],
                 ),
               ),

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -28,7 +29,12 @@ class _MainFeedState extends State<MainFeed> {
   List<DropdownMenuItem> categoriesList;
 
   Future<String> getUid() async {
-    uid = (await FirebaseAuth.instance.currentUser()).uid;
+    FirebaseUser currUser = await FirebaseAuth.instance.currentUser();
+    if (currUser == null) {
+      print('not logged in');
+      return null;
+    }
+    uid = currUser.uid;
     return uid;
   }
 
@@ -172,6 +178,36 @@ class _MainFeedState extends State<MainFeed> {
                 Switch(
                   value: isFavoritesList,
                   onChanged: (value) {
+                    if (uid == null) {
+                      Alert(
+                        title: 'Not Signed In',
+                        context: context,
+                        desc:
+                            "You may browse the business listings as a guest, but in order to save your favorite business you must sign in.",
+                        buttons: [
+                          DialogButton(
+                            child: Text(
+                              "Sign In",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20),
+                            ),
+                            onPressed: () => Navigator.pushReplacementNamed(
+                                context, LoginPage.id),
+                            width: 60,
+                          ),
+                          DialogButton(
+                            child: Text(
+                              "Cancel",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20),
+                            ),
+                            onPressed: () => Navigator.pop(context),
+                            width: 60,
+                          )
+                        ],
+                      ).show();
+                      return;
+                    }
                     print(value.toString());
                     setState(() {
                       isFavoritesList = value;
@@ -188,6 +224,9 @@ class _MainFeedState extends State<MainFeed> {
                         FirebaseAuth.instance.signOut();
                         Navigator.pushNamed(context, LoginPage.id);
                         break;
+                      case 'Sign In!':
+                        Navigator.pushReplacementNamed(context, LoginPage.id);
+                        break;
                       case 'Submit Business':
                         launch(
                             "https://docs.google.com/forms/d/e/1FAIpQLSd6P1mSVRi7FvgUr2T3BQ0rDSuluPucbxvP543R7DsZDO6dnQ/viewform");
@@ -195,8 +234,8 @@ class _MainFeedState extends State<MainFeed> {
                     }
                   },
                   itemBuilder: (BuildContext context) {
-                    return {'Sign Out!', 'Submit Business'}
-                        .map((String choice) {
+                    String text = uid == null ? 'Sign In!' : 'Sign Out!';
+                    return {text, 'Submit Business'}.map((String choice) {
                       return PopupMenuItem<String>(
                         value: choice,
                         child: Text(choice),
