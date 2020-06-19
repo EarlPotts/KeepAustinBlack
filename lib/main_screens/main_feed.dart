@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../constants.dart';
 import '../directory_stream.dart';
 import '../favorites_stream.dart';
@@ -79,7 +80,7 @@ class _MainFeedState extends State<MainFeed> {
     // TODO: implement initState
     super.initState();
     setCurrCategory();
-    mapOutdistances();
+//    mapOutdistances();
 
     //initialize the list of categories in the category picker
     categoriesList = categories.map<DropdownMenuItem<String>>((String value) {
@@ -187,12 +188,15 @@ class _MainFeedState extends State<MainFeed> {
                         FirebaseAuth.instance.signOut();
                         Navigator.pushNamed(context, LoginPage.id);
                         break;
-                      case 'Send feedback':
+                      case 'Submit Business':
+                        launch(
+                            "https://docs.google.com/forms/d/e/1FAIpQLSd6P1mSVRi7FvgUr2T3BQ0rDSuluPucbxvP543R7DsZDO6dnQ/viewform");
                         break;
                     }
                   },
                   itemBuilder: (BuildContext context) {
-                    return {'Sign Out!', 'Give Feedback'}.map((String choice) {
+                    return {'Sign Out!', 'Submit Business'}
+                        .map((String choice) {
                       return PopupMenuItem<String>(
                         value: choice,
                         child: Text(choice),
