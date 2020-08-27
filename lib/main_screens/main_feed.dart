@@ -10,7 +10,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../constants.dart';
 import '../directory_stream.dart';
-import '../favorites_stream.dart';
 import 'package:geolocator/geolocator.dart';
 
 class MainFeed extends StatefulWidget {
@@ -25,7 +24,7 @@ class MainFeed extends StatefulWidget {
 class _MainFeedState extends State<MainFeed> {
   String category;
   bool isFavoritesList = false;
-  String uid;
+  String uid, searchTxt = "";
   List<DropdownMenuItem> categoriesList;
 
   Future<String> getUid() async {
@@ -154,16 +153,22 @@ class _MainFeedState extends State<MainFeed> {
                 ),
               ),
             ),
+            TextField(),
             if (!isFavoritesList)
               DirectoryStream(
                 firestore: Firestore.instance,
                 category: category,
+                type: 'directory',
+                uid: uid,
+                search: searchTxt,
               ),
             if (isFavoritesList)
-              FavoritesStream(
+              DirectoryStream(
                 firestore: Firestore.instance,
                 category: category,
                 uid: uid,
+                type: 'favorites',
+                search: searchTxt,
               ),
           ],
         ),
@@ -222,7 +227,7 @@ class _MainFeedState extends State<MainFeed> {
                     switch (value) {
                       case 'Sign Out!':
                         FirebaseAuth.instance.signOut();
-                        Navigator.pushNamed(context, LoginPage.id);
+                        Navigator.pushReplacementNamed(context, LoginPage.id);
                         break;
                       case 'Sign In!':
                         Navigator.pushReplacementNamed(context, LoginPage.id);
