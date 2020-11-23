@@ -15,7 +15,7 @@ class Authentication {
       final user = await auth.createUserWithEmailAndPassword(
           email: email, password: password);
       if (user != null) {
-        String uid = (await auth.currentUser()).uid;
+        String uid = auth.currentUser.uid;
         //add the user's name to the database
         DocumentReference userInfo = firestore.document('users/$uid');
         userInfo.setData(

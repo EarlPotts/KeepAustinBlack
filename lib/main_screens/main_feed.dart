@@ -1,4 +1,3 @@
-import 'package:geocoder/geocoder.dart';
 import 'package:keepaustinblack/main_screens/login_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,7 +14,8 @@ import 'package:geolocator/geolocator.dart';
 class MainFeed extends StatefulWidget {
   static String id = 'mainFeed';
   static Position location;
-  static Map<String, double> distances = {};
+  static Map<String, double> distances;
+  static Map<String, List<String>> userLikes = {};
 
   @override
   _MainFeedState createState() => _MainFeedState();
@@ -27,65 +27,10 @@ class _MainFeedState extends State<MainFeed> {
   String uid, searchTxt = "";
   List<DropdownMenuItem> categoriesList;
 
-  Future<String> getUid() async {
-    FirebaseUser currUser = await FirebaseAuth.instance.currentUser();
-    if (currUser == null) {
-      print('not logged in');
-      return null;
-    }
-    uid = currUser.uid;
-    return uid;
-  }
-
-  Future<Position> getCurrentLocation() async {
-    GeolocationStatus status =
-        await Geolocator().checkGeolocationPermissionStatus();
-
-    if (status != GeolocationStatus.disabled) {
-      Position pos = await Geolocator()
-          .getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
-      print(pos.toString());
-      return pos;
-    } else {
-      return null;
-    }
-  }
-
-  void mapOutdistances() async {
-    MainFeed.location = await getCurrentLocation();
-    Firestore store = Firestore.instance;
-    for (String category in categories) {
-      print(category);
-      QuerySnapshot listingsStream =
-          await store.collection(category).getDocuments();
-
-      List<DocumentSnapshot> listings = listingsStream.documents;
-      for (DocumentSnapshot listing in listings) {
-        DocumentReference business = listing.reference;
-        String name = listing.data['Business'];
-        double long = listing.data['longitude'];
-        double lat = listing.data['latitude'];
-        if (long != 0 && long != null && lat != 0 && lat != null) {
-          try {
-            while (MainFeed.location == null) {}
-            ;
-            double distance = await Geolocator().distanceBetween(lat, long,
-                MainFeed.location.latitude, MainFeed.location.longitude);
-            MainFeed.distances.addAll({name: distance});
-          } on Exception catch (e) {
-            print("ERROR: $name --- ${e.toString()}");
-          }
-        }
-      }
-    }
-  }
-
-  @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     setCurrCategory();
-//    mapOutdistances();
+    uid = FirebaseAuth.instance.currentUser.uid;
 
     //initialize the list of categories in the category picker
     categoriesList = categories.map<DropdownMenuItem<String>>((String value) {
@@ -96,9 +41,20 @@ class _MainFeedState extends State<MainFeed> {
     }).toList();
   }
 
+  //method to get the user's likes and set them in static variable
+  void getLikes() async{
+    User user = FirebaseAuth.instance.currentUser;
+    DocumentReference userDoc = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid);
+
+    for(String category in categories){
+      userDoc.collection('fav' + category).snapshots();
+    }
+  }
+
   //method check for cached last chosen category
   void setCurrCategory() async {
-    uid = await getUid();
     final prefs = await SharedPreferences.getInstance();
     String lastCategory = prefs.getString('currCategory') ?? null;
     //if there is already a cached category, go to that category
@@ -156,7 +112,7 @@ class _MainFeedState extends State<MainFeed> {
             TextField(),
             if (!isFavoritesList)
               DirectoryStream(
-                firestore: Firestore.instance,
+                firestore: FirebaseFirestore.instance,
                 category: category,
                 type: 'directory',
                 uid: uid,
@@ -255,4 +211,6 @@ class _MainFeedState extends State<MainFeed> {
       ),
     );
   }
+
+
 }

@@ -37,40 +37,31 @@ class ListingCard extends StatefulWidget {
 class _ListingCardState extends State<ListingCard>
     with AutomaticKeepAliveClientMixin {
   bool liked = false;
-  String uid;
   FirebaseAuth auth = FirebaseAuth.instance;
   @override
   bool get wantKeepAlive => true;
-
-  Future<String> getUid() async {
-    if ((await auth.currentUser()) != null) {
-      uid = (await auth.currentUser()).uid;
-      return uid;
-    }
-  }
+  String uid;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getUid();
+    uid = auth.currentUser.uid;
     getIsLiked();
   }
 
   void getIsLiked() async {
-    String currUid = await getUid();
-    DocumentReference newFavorite = Firestore.instance
+    DocumentSnapshot newFavorite = await FirebaseFirestore.instance
         .collection('users')
-        .document(currUid)
+        .doc(uid)
         .collection('fav${widget.cardCategory}')
-        .document(widget.cardId);
+        .doc(widget.cardId)
+        .get();
 
-    final data = await newFavorite.get();
-    final String mapString = data.data.toString();
-    bool result = mapString != null && mapString != "" && mapString != 'null';
+
     if (this.mounted) {
       setState(() {
-        liked = result;
+        liked = newFavorite.exists;
       });
     }
   }
@@ -178,11 +169,11 @@ class _ListingCardState extends State<ListingCard>
   }
 
   Future<bool> onFavButtonTapped(bool isLiked) async {
-    final firestore = Firestore.instance;
     final auth = FirebaseAuth.instance;
-    final FirebaseUser currUser = await auth.currentUser();
+    final User currUser = auth.currentUser;
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    if (currUser == null) {
+    if (currUser.isAnonymous) {
       Alert(
         title: 'Not Signed In',
         context: context,
@@ -221,7 +212,7 @@ class _ListingCardState extends State<ListingCard>
     //code to add business to the current user's favorites list
     final info = await businessReference.get();
     if (!isLiked) {
-      newFavorite.setData(info.data);
+      //newFavorite.setData(info.data);
     }
     //code to remove business from the current user's favorites list
     else {

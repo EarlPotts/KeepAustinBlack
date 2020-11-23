@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
 import 'cards/listing_card.dart';
 import 'main_screens/main_feed.dart';
 
@@ -11,7 +10,7 @@ class DirectoryStream extends StatelessWidget {
       @required this.type,
       @required this.uid,
       @required this.search});
-  final Firestore firestore;
+  final FirebaseFirestore firestore;
   final String category, type, uid, search;
 
   @override
@@ -56,42 +55,43 @@ class DirectoryStream extends StatelessWidget {
             );
           }
         }
-        final listings = snapshot.data.documents;
+        final listings = snapshot.data.docs;
         List<ListingCard> directory = [];
 
-        for (var listing in listings) {
-          final businessName = listing.data['Business'];
+        for (QueryDocumentSnapshot listing in listings) {
+          final businessName = listing.data()['Business'];
+          //if the user entered a search term, then only add business that match
           if (search != "" && search != null && businessName != null) {
-            bool include = businessName
+            //check if the search term appears in the business name or description
+            bool nameMatch = businessName
                 .toString()
                 .toLowerCase()
                 .contains(search.toLowerCase());
-            print('Name: $businessName Search terms: $search');
-            if (!include) break;
+
+            bool descMatch = listing.data()['Description']
+                .toString()
+                .toLowerCase()
+                .contains(search.toLowerCase());
+
+            bool include = nameMatch || descMatch;
+            if (!include)
+              break;
           }
-          final address = listing.data['Address'];
-          final number = listing.data['Phone Number'].toString();
-          final imgUrl = listing.data['Img URL'];
-          final website = listing.data['Website'];
-          final description = listing.data['Description'];
-          final id = listing.documentID;
 
-          double long = listing.data['longitude'];
-          double lat = listing.data['latitude'];
-
-          if (long == null || lat == null) {}
+          //create and add a card for the business
           final listingCard = ListingCard(
               name: businessName,
-              address: address,
-              img: imgUrl,
-              phoneNum: number,
-              website: website,
-              description: description,
+              address: listing.data()['Address'],
+              img: listing.data()['Img URL'],
+              phoneNum: listing.data()['Phone Number'].toString(),
+              website: listing.data()['Website'],
+              description: listing.data()['Description'],
               cardCategory: category,
-              cardId: id);
+              cardId: listing.id);
           directory.add(listingCard);
         }
 
+        //if no businesses match the criteria, tell the user
         if (directory.isEmpty) {
           return Center(
             child: Padding(
@@ -117,17 +117,5 @@ class DirectoryStream extends StatelessWidget {
         );
       }),
     );
-  }
-
-  int listingComparator(ListingCard a, ListingCard b) {
-    //if no location data, rely on alphabetical
-    if (MainFeed.location == null) {
-      return a.name.compareTo(b.name);
-    } else {
-      Map<String, double> distancesMap = MainFeed.distances;
-      while (distancesMap[a.name] != null && distancesMap[b.name] != null) {}
-      ;
-      return (distancesMap[a.name] - distancesMap[b.name]).toInt();
-    }
   }
 }
